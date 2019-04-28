@@ -18,26 +18,36 @@ const (
 var (
 	scene1, scene2, scoreboard *ebiten.Image
 	t                          float64
-	step                       int
+	n                          int
 )
 
 func update(screen *ebiten.Image) error {
 	// Draw the scenes
-	screen.DrawImage(scene1, &ebiten.DrawImageOptions{})
+	switch n {
+	case 0:
+		screen.DrawImage(scene1, &ebiten.DrawImageOptions{})
+	case 1:
+		screen.DrawImage(scene2, &ebiten.DrawImageOptions{})
+	}
 
 	// Draw transition
 	scoreboardHeight := 44.0
 	maxRect := gfx.R(0, scoreboardHeight, screenWidth, screenHeight)
-	switch step {
+	switch int(t) {
 	case 0:
-		TransitionGrowingRect(screen, maxRect, t, colornames.Black)
+		TransitionShrinkingRect(screen, maxRect, t, colornames.Black)
+	case 1:
+		offset := 1.0
+		TransitionGrowingRect(screen, maxRect, t-offset, colornames.Black)
 	}
 
 	// Draw scoreboard
 	screen.DrawImage(scoreboard, &ebiten.DrawImageOptions{})
 
-	if t < 1 {
-		t += 0.01
+	t += 0.01
+	if t >= 2 {
+		t = 0
+		n = 1 - n
 	}
 	return nil
 }
@@ -48,11 +58,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	scene2Data, err := shovelknightresources.Asset("scene_2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 	scoreboardData, err := shovelknightresources.Asset("scoreboard.png")
 	if err != nil {
 		log.Fatal(err)
 	}
 	scene1 = ebitendrawutil.ImageFromBytes(scene1Data)
+	scene2 = ebitendrawutil.ImageFromBytes(scene2Data)
 	scoreboard = ebitendrawutil.ImageFromBytes(scoreboardData)
 
 	// Start the Ebiten update loop
