@@ -5,6 +5,8 @@ import (
 
 	shovelknightresources "github.com/kyeett/animex/resources/shovelknight"
 	"github.com/kyeett/ebitendrawutil"
+	"github.com/peterhellberg/gfx"
+	"golang.org/x/image/colornames"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -23,8 +25,20 @@ func update(screen *ebiten.Image) error {
 	// Draw the scenes
 	screen.DrawImage(scene1, &ebiten.DrawImageOptions{})
 
+	// Draw transition
+	scoreboardHeight := 44.0
+	maxRect := gfx.R(0, scoreboardHeight, screenWidth, screenHeight)
+	switch step {
+	case 0:
+		TransitionGrowingRect(screen, maxRect, t, colornames.Black)
+	}
+
 	// Draw scoreboard
 	screen.DrawImage(scoreboard, &ebiten.DrawImageOptions{})
+
+	if t < 1 {
+		t += 0.01
+	}
 	return nil
 }
 

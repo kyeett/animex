@@ -11,10 +11,12 @@ import (
 )
 
 func TransitionGrowingBorder(screen *ebiten.Image, maxRect gfx.Rect, t float64, clr color.Color) {
-	min := gfx.MathMin(maxRect.W(), maxRect.W())
+	min := gfx.MathMin(maxRect.W(), maxRect.H())
 	ebitendrawutil.DrawRect(screen, maxRect, colornames.Black, int(t*min/2.0))
 }
 
+// TransitionGrowingRect draws a rectangle that grows from the center to fill maxRect
+// The behaviour is only defined for 0 <= t <= 1
 func TransitionGrowingRect(screen *ebiten.Image, maxRect gfx.Rect, t float64, clr color.Color) {
 	v := maxRect.Center().Lerp(maxRect.Min, t)
 	w := gfx.Lerp(0, maxRect.W(), t)
