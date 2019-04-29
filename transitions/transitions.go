@@ -28,7 +28,18 @@ func TransitionGrowingRect(screen *ebiten.Image, maxRect gfx.Rect, t float64, cl
 	ebitenutil.DrawRect(screen, v.X, v.Y, w, h, clr)
 }
 
-// TransitionGrowingRect draws a rectangle that shrinks towards the center as to goes from 0 to 1
+// TransitionShrinkingRect draws a rectangle that shrinks towards the center as to goes from 0 to 1
 func TransitionShrinkingRect(screen *ebiten.Image, maxRect gfx.Rect, t float64, clr color.Color) {
 	TransitionGrowingRect(screen, maxRect, 1-t, clr)
+}
+
+// TransitionBlinds draws n rectangles that expands up to cover maxRect  as t goes from 0 to 1
+func TransitionBlinds(screen *ebiten.Image, maxRect gfx.Rect, nRectangles int, t float64, clr color.Color) {
+	blindMaxHeight := maxRect.H() / float64(nRectangles)
+	for i := 0; i < nRectangles; i++ {
+		x := maxRect.Min.X
+		y := maxRect.Min.Y + float64(i)*blindMaxHeight
+		height := gfx.Lerp(0, blindMaxHeight, t)
+		ebitenutil.DrawRect(screen, x, y, maxRect.W(), height, clr)
+	}
 }
