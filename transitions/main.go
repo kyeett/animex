@@ -18,12 +18,11 @@ const (
 var (
 	scene1, scene2, scoreboard *ebiten.Image
 	t                          float64
-	n                          int
 )
 
 func update(screen *ebiten.Image) error {
 	// Draw the scenes
-	switch n {
+	switch int(t / 2) {
 	case 0:
 		screen.DrawImage(scene1, &ebiten.DrawImageOptions{})
 	case 1:
@@ -39,15 +38,20 @@ func update(screen *ebiten.Image) error {
 	case 1:
 		offset := 1.0
 		TransitionGrowingRect(screen, maxRect, t-offset, colornames.Black)
+	case 2:
+		offset := 2.0
+		TransitionShrinkingBorder(screen, maxRect, t-offset, colornames.Black)
+	case 3:
+		offset := 3.0
+		TransitionGrowingBorder(screen, maxRect, t-offset, colornames.Black)
 	}
 
 	// Draw scoreboard
 	screen.DrawImage(scoreboard, &ebiten.DrawImageOptions{})
 
-	t += 0.01
-	if t >= 2 {
+	t += 0.02
+	if t >= 4 {
 		t = 0
-		n = 1 - n
 	}
 	return nil
 }
