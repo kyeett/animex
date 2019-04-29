@@ -5,6 +5,11 @@ import (
 	"log"
 	"math/rand"
 
+<<<<<<< HEAD
+=======
+	"github.com/hajimehoshi/ebiten/inpututil"
+
+>>>>>>> screen shake: basic example
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 
 	shovelknightresources "github.com/kyeett/animex/resources/shovelknight"
@@ -19,7 +24,11 @@ const (
 )
 
 var (
+<<<<<<< HEAD
 	scene1, tmpScreen *ebiten.Image
+=======
+	scene1, tmpScreen, *ebiten.Image
+>>>>>>> screen shake: basic example
 	t                 float64
 )
 
@@ -44,6 +53,7 @@ func simpleScreenShake(screen *ebiten.Image, t float64) {
 }
 
 func update(screen *ebiten.Image) error {
+<<<<<<< HEAD
 	// touchScreenTouched := len(inpututil.JustPressedTouchIDs()) > 0
 	// if touchScreenTouched || inpututil.IsKeyJustPressed(ebiten.KeyX) {
 	// 	t = 0
@@ -54,6 +64,8 @@ func update(screen *ebiten.Image) error {
 	// 	t = 0
 	// }
 
+=======
+>>>>>>> screen shake: basic example
 	simpleScreenShake(screen, t)
 	t += 1 / 60.0
 	return nil
