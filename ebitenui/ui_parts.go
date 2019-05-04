@@ -1,6 +1,8 @@
 package ebitenui
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/kyeett/ebitendrawutil"
 	"github.com/peterhellberg/gfx"
@@ -15,24 +17,20 @@ type logger interface {
 }
 
 type Button struct {
-	BaseRect
+	Component2
 }
 
-func NewButton(r gfx.Rect) Button {
-	return Button{
-		BaseRect{
-			Rect:    r,
-			Visible: true,
-		},
-	}
+func NewButton(parent Componenter, r gfx.Rect) *Button {
+	b := Button{}
+	b.Component2 = NewComponent2(r, b.Render)
+	b.Parent = parent
+	fmt.Println("new button")
+	return &b
 }
 
 func (b *Button) Render(screen *ebiten.Image, offset gfx.Vec) {
-	if b.Visible {
-		c := colornames.White
-		if b.Hovered {
-			c = colornames.Yellow
-		}
-		ebitendrawutil.DrawRect(screen, b.Rect.Moved(offset), c, 3)
-	}
+	c := colornames.White
+	// fmt.Println("Base:", b.Rect)
+	// fmt.Println("Moved", b.Rect.Moved(offset), offset)
+	ebitendrawutil.DrawRect(screen, b.Rect.Moved(offset), c, 3)
 }
