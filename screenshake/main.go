@@ -1,8 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"image/color"
 	"log"
 	"math/rand"
+
+	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/inpututil"
 
 	shovelknightresources "github.com/kyeett/animex/resources/shovelknight"
 	"github.com/peterhellberg/gfx"
@@ -61,7 +66,41 @@ func nicerScreenShake(screen *ebiten.Image, t float64) {
 var shakeNicely = true
 
 func update(screen *ebiten.Image) error {
-	nicerScreenShake(screen, t) // Previously simpleScreenShake(screen, t)
+
+	touchScreenTouched := len(inpututil.JustPressedTouchIDs()) > 0
+	if touchScreenTouched || inpututil.IsKeyJustPressed(ebiten.KeyW) || inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		t = 0
+		if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+			shakeNicely = false
+		} else {
+			shakeNicely = true
+		}
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
+		maxAmplitude = gfx.Clamp(maxAmplitude-1.0, 2, 20)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		maxAmplitude = gfx.Clamp(maxAmplitude+1.0, 2, 20)
+	}
+
+	// Shake every 5 seconds
+	if t > 5 {
+		t = 0
+	}
+
+	if shakeNicely {
+		nicerScreenShake(screen, t)
+	} else {
+		simpleScreenShake(screen, t)
+	}
+
+	// Draw help text
+	ebitenutil.DrawRect(screen, 0, 0, 200, 70, color.Black)
+	ebitenutil.DebugPrintAt(screen, "Press W to shake screen", 7, 7)
+	ebitenutil.DebugPrintAt(screen, "Press S to shake screen nicely", 7, 27)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Change amplitude (%2.0f) with A/D", maxAmplitude), 7, 47)
+
 	t += 1 / 60.0
 	return nil
 }
