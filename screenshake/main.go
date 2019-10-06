@@ -1,16 +1,8 @@
 package main
 
 import (
-	"image/color"
 	"log"
 	"math/rand"
-
-<<<<<<< HEAD
-=======
-	"github.com/hajimehoshi/ebiten/inpututil"
-
->>>>>>> screen shake: basic example
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 
 	shovelknightresources "github.com/kyeett/animex/resources/shovelknight"
 	"github.com/peterhellberg/gfx"
@@ -21,28 +13,25 @@ import (
 
 const (
 	screenWidth, screenHeight = 400, 300
+	padding                   = 20.0
 )
 
 var (
-<<<<<<< HEAD
-	scene1, tmpScreen *ebiten.Image
-=======
-	scene1, tmpScreen, *ebiten.Image
->>>>>>> screen shake: basic example
-	t                 float64
+	scene1, tmpScreen, biggerTmpScreen *ebiten.Image
+	t                                  float64
+	maxAmplitude                       = 10.0
 )
 
 func simpleScreenShake(screen *ebiten.Image, t float64) {
 	// Draw scene onto tmpScreen
-	tmpScreen.DrawImage(scene1, &ebiten.DrawImageOptions{})
-
-	// Draw help text
-	ebitenutil.DrawRect(tmpScreen, 5+115, 20, 150, 18, color.Black)
-	ebitenutil.DebugPrintAt(tmpScreen, "Press X to shake screen", 10+115, 20)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-padding, -padding)
+	tmpScreen.DrawImage(scene1, op)
 
 	// Draw tmpScreen on an offset (screen shake) applied
-	maxAmplitude := 10.0
-	op := &ebiten.DrawImageOptions{}
+
+	op = &ebiten.DrawImageOptions{}
+	// op.GeoM.Translate(padding, -padding)
 	if t < 1 {
 		amplitude := maxAmplitude * gfx.Lerp(1, 0, t)
 		dx := amplitude * (2*rand.Float64() - 1)
@@ -52,21 +41,27 @@ func simpleScreenShake(screen *ebiten.Image, t float64) {
 	screen.DrawImage(tmpScreen, op)
 }
 
+func nicerScreenShake(screen *ebiten.Image, t float64) {
+	// Draw scene onto tmpScreen
+	biggerTmpScreen.DrawImage(scene1, &ebiten.DrawImageOptions{})
+
+	// Draw tmpScreen on an offset (screen shake) applied
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-padding, -padding)
+	if t < 1 {
+		amplitude := maxAmplitude * gfx.Lerp(1, 0, t)
+		dx := amplitude * (2*rand.Float64() - 1)
+		dy := amplitude * (2*rand.Float64() - 1)
+		op.GeoM.Translate(-dx, -dy)
+	}
+
+	screen.DrawImage(biggerTmpScreen, op)
+}
+
+var shakeNicely = true
+
 func update(screen *ebiten.Image) error {
-<<<<<<< HEAD
-	// touchScreenTouched := len(inpututil.JustPressedTouchIDs()) > 0
-	// if touchScreenTouched || inpututil.IsKeyJustPressed(ebiten.KeyX) {
-	// 	t = 0
-	// }
-
-	// // Shake every 5 seconds
-	// if t > 5 {
-	// 	t = 0
-	// }
-
-=======
->>>>>>> screen shake: basic example
-	simpleScreenShake(screen, t)
+	nicerScreenShake(screen, t) // Previously simpleScreenShake(screen, t)
 	t += 1 / 60.0
 	return nil
 }
@@ -79,8 +74,14 @@ func main() {
 	}
 	scene1 = ebitendrawutil.ImageFromBytes(scene1Data)
 
-	// Create temp screen
+	// Create temp screens
 	tmpScreen, err = ebiten.NewImage(screenWidth, screenHeight, ebiten.FilterDefault)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create temp screen
+	biggerTmpScreen, err = ebiten.NewImage(screenWidth+40, screenHeight+40, ebiten.FilterDefault)
 	if err != nil {
 		log.Fatal(err)
 	}
